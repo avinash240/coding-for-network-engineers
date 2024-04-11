@@ -2,6 +2,8 @@ import sys
 import os
 import json
 import argparse
+import csv
+
 lib_path = os.path.join(os.path.dirname(__file__), 'lib')
 sys.path.append(lib_path)
 
@@ -52,8 +54,21 @@ def process_interface_state(i_state):
     return interface_info
 
 
-def write_csv(fh, i_map):
-    fh.close()
+def write_csv(fname, i_map):
+    with open(fname, 'w') as fh:
+        mwriter = csv.writer(fh, dialect='excel')
+        mwriter.writerow(['router-address-grpc',
+                          'interface name',
+                          'phy-address',
+                          'ipv4-addrs',
+                          'ipv6-addrs'])
+        for router_add_port, i_info in i_map.items():
+            for iname, istate in i_info.items():
+                mwriter.writerow([router_add_port,
+                                  iname,
+                                  istate['phy-address'],
+                                  istate['ipv4-addrs'],
+                                  istate['ipv6-addrs']])
 
 class SplitArgs(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -64,8 +79,8 @@ if __name__ == "__main__":
                     prog='interface-map',
                     description='generates csv of frr router interfaces',
                 )
-    parser.add_argument('-r', '--router-addresses', action=SplitArgs, required=True, help="comma seperated list of address:grpc-port")
-    parser.add_argument('-o','--output-csv', type=argparse.FileType('w'), required=True, help="output csv filename")
+    parser.add_argument('-r', '--router-addresses',type=str, action=SplitArgs, required=True, help="comma seperated list of address:grpc-port")
+    parser.add_argument('-o','--output-csv', type=str, required=True, help="output csv filename")
     args = parser.parse_args()
     #
     router_i_map = {}
