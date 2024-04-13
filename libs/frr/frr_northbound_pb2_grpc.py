@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import frr_northbound_pb2 as frr__northbound__pb2
+import libs.frr.frr_northbound_pb2 as frr__northbound__pb2
 
 
 class NorthboundStub(object):
