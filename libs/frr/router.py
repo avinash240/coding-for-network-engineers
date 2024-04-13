@@ -34,15 +34,16 @@ class FRRouter:
                 if 'name' in i:
                     d = dict(name=i['name'])
                     if 'state' in i:
-                        for k in ['phy-address']:
-                            d[k]= i['state'].get(k)
+                        d['phy-addrs']= i['state']['phy-address']
 
-                    for ipv in ['ipv4-addrs', 'ipv6-addrs']:
-                        if ipv in i:
-                            ip_list = ["{}/{}".format(x['ip'], x['prefix-length']) for x in i[ipv]]
-                            d[ipv] = ip_list.join(",")
-                        else:
-                            d[ipv] = 'n/a'
+                    if 'frr-zebra:zebra' in i:
+                        zebra = i['frr-zebra:zebra']
+                        for ipv in ['ipv4-addrs', 'ipv6-addrs']:
+                            if ipv in zebra:
+                                ip_list = ["{}/{}".format(x['ip'], x['prefix-length']) for x in zebra[ipv]]
+                                d[ipv] = ','.join(ip_list)
+                            else:
+                                d[ipv] = 'n/a'
                     interface_info[i['name']] = d
         return interface_info
 
