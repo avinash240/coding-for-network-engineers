@@ -1,7 +1,7 @@
 import csv
 
 class Mapper(object):
-    def __init__(self) -> None:
+    def __init__(self):
         self.router_map = {}
 
     def add_router(self, router):
